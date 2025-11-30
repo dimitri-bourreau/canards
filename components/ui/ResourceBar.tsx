@@ -23,7 +23,7 @@ function ResourceTooltip({ title, description, gainInfo, autoGain, children }: T
       {children}
       
       {isHovered && (
-        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50 animate-slide-up">
+        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-[100] animate-slide-up">
           <div className="bg-lake-900/95 backdrop-blur-md border border-lake-500/30 rounded-xl p-3 shadow-xl min-w-[220px]">
             <h4 className="text-amber-400 font-display font-bold text-sm mb-1">{title}</h4>
             <p className="text-cream-100 text-xs leading-relaxed mb-2">
@@ -63,7 +63,7 @@ export default function ResourceBar() {
   const metrics = getMetrics();
   
   return (
-    <div className="glass rounded-2xl p-4 flex items-center justify-between gap-4 flex-wrap">
+    <div className="glass rounded-2xl p-4 flex items-center justify-between gap-4 flex-wrap relative z-20">
       {/* Day Counter */}
       <ResourceTooltip
         title="Jour"

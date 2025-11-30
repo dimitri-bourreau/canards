@@ -109,7 +109,7 @@ function ActionButton({
       
       {/* Tooltip on Hover */}
       {isHovered && !locked && (
-        <div className="absolute bottom-full left-0 right-0 mb-2 z-50 animate-slide-up">
+        <div className="absolute bottom-full left-0 right-0 mb-2 z-[100] animate-slide-up">
           <div className="bg-lake-900/95 backdrop-blur-md border border-lake-500/30 rounded-xl p-3 shadow-xl">
             <p className="text-cream-100 text-xs leading-relaxed mb-2">
               {detailedDescription}
