@@ -12,7 +12,7 @@ export default function GameControls() {
   
   useEffect(() => {
     if (!isPaused) {
-      const tickInterval = 2000 / speed; // Base: 2 seconds per tick
+      const tickInterval = 5000 / speed; // Base: 5 seconds per tick (cozy pace)
       intervalRef.current = setInterval(() => {
         gameTick();
       }, tickInterval);

@@ -69,7 +69,7 @@ export default function ResourceBar() {
         title="Jour"
         description="Le temps qui passe dans votre sanctuaire. Chaque jour représente 10 cycles de jeu."
         gainInfo="Le jour avance automatiquement tant que le jeu n'est pas en pause."
-        autoGain="1 jour = 10 cycles (environ 20 secondes en vitesse 1x)"
+        autoGain="1 jour = 10 cycles (environ 50 secondes en vitesse 1x)"
       >
         <div className="flex items-center gap-3 cursor-help">
           <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
@@ -87,7 +87,7 @@ export default function ResourceBar() {
         title="Énergie"
         description="Ressource nécessaire pour effectuer des actions. Représente l'effort de votre équipe de bénévoles."
         gainInfo="Se régénère automatiquement avec le temps. Attendez ou réduisez vos actions pour récupérer."
-        autoGain="+5 énergie par cycle (toutes les 2 secondes en 1x)"
+        autoGain="+5 énergie par cycle (toutes les 5 secondes en 1x)"
       >
         <div className="flex items-center gap-2 cursor-help">
           <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center">
