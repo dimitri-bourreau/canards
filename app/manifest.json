@@ -1,0 +1,18 @@
+{
+  "name": "Canards - Sanctuaire Animalier",
+  "short_name": "Canards",
+  "description": "Un jeu de gestion de sanctuaire animalier minimaliste",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#021e19",
+  "theme_color": "#0d7a61",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
