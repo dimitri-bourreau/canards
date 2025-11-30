@@ -41,6 +41,7 @@ Un jeu de gestion de sanctuaire animalier minimaliste où vous restaurez et entr
   - Plantes ondulant
 - Effets visuels lors des actions (ondulations lors du nettoyage)
 - Contrôles orbitaux pour faire tourner la vue
+- **Interactivité** : Cliquez sur un canard pour le caresser et voir des cœurs animés ! ❤️
 
 ## 🛠️ Technologies
 
@@ -91,6 +92,7 @@ npm run lint     # Vérifier le code
 3. **Protégez l'environnement** : Nettoyez le lac, améliorez la filtration
 4. **Développez l'écosystème** : Plantez de la végétation, ajoutez des espèces
 5. **Surveillez les indicateurs** : Maintenez un bon niveau de bien-être et de biodiversité
+6. **Interagissez** : Survolez les éléments pour voir des tooltips informatifs, cliquez sur les canards dans le lac !
 
 ## 📝 Licence
 
@@ -99,4 +101,3 @@ MIT
 ---
 
 *Canards • Un jeu sur le soin, pas l'exploitation 💚*
-
