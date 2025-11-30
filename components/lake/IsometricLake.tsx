@@ -1,10 +1,62 @@
 'use client';
 
-import { useRef, useMemo, useEffect } from 'react';
+import { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
+import { OrbitControls, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { useGameStore } from '@/store/gameStore';
+
+// Animated Hearts Component
+function AnimatedHearts({ position, onComplete }: { position: [number, number, number]; onComplete: () => void }) {
+  const [hearts, setHearts] = useState([
+    { id: 0, x: 0, y: 0, scale: 1, opacity: 1 },
+    { id: 1, x: -0.3, y: 0.1, scale: 0.8, opacity: 1 },
+    { id: 2, x: 0.3, y: 0.15, scale: 0.7, opacity: 1 },
+  ]);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onComplete();
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [onComplete]);
+  
+  return (
+    <Html position={[position[0], position[1] + 0.5, position[2]]} center>
+      <div className="pointer-events-none">
+        {hearts.map((heart, i) => (
+          <div
+            key={heart.id}
+            className="absolute text-2xl animate-bounce"
+            style={{
+              left: `${heart.x * 50}px`,
+              animation: `floatUp 1.5s ease-out forwards`,
+              animationDelay: `${i * 0.15}s`,
+              opacity: 0,
+            }}
+          >
+            ❤️
+          </div>
+        ))}
+      </div>
+      <style jsx>{`
+        @keyframes floatUp {
+          0% {
+            transform: translateY(0) scale(0.5);
+            opacity: 0;
+          }
+          20% {
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(-60px) scale(1.2);
+            opacity: 0;
+          }
+        }
+      `}</style>
+    </Html>
+  );
+}
 
 // Water surface with ripple effect
 function WaterSurface({ activeEffects }: { activeEffects: string[] }) {
@@ -86,40 +138,87 @@ function WaterSurface({ activeEffects }: { activeEffects: string[] }) {
 }
 
 // Duck component
-function Duck({ position, index }: { position: [number, number, number]; index: number }) {
+function Duck({ 
+  position, 
+  index, 
+  onPet 
+}: { 
+  position: [number, number, number]; 
+  index: number;
+  onPet: (pos: [number, number, number]) => void;
+}) {
   const meshRef = useRef<THREE.Group>(null);
+  const [isHovered, setIsHovered] = useState(false);
   const offset = useMemo(() => Math.random() * Math.PI * 2, []);
+  const currentPos = useRef<[number, number, number]>(position);
   
   useFrame((state) => {
     if (meshRef.current) {
       // Swimming motion
       const time = state.clock.elapsedTime + offset;
-      meshRef.current.position.x = position[0] + Math.sin(time * 0.5) * 0.5;
-      meshRef.current.position.z = position[2] + Math.cos(time * 0.3) * 0.3;
-      meshRef.current.position.y = 0.15 + Math.sin(time * 2) * 0.03;
+      const newX = position[0] + Math.sin(time * 0.5) * 0.5;
+      const newZ = position[2] + Math.cos(time * 0.3) * 0.3;
+      const newY = 0.15 + Math.sin(time * 2) * 0.03;
+      
+      meshRef.current.position.x = newX;
+      meshRef.current.position.z = newZ;
+      meshRef.current.position.y = newY;
+      
+      currentPos.current = [newX, newY, newZ];
       
       // Face direction of movement
       meshRef.current.rotation.y = Math.sin(time * 0.5) * 0.5;
+      
+      // Scale up slightly when hovered
+      const targetScale = isHovered ? 1.15 : 1;
+      meshRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
     }
   });
   
+  const handleClick = (e: THREE.Event) => {
+    e.stopPropagation();
+    onPet(currentPos.current);
+  };
+  
   return (
-    <group ref={meshRef} position={position}>
+    <group 
+      ref={meshRef} 
+      position={position}
+      onClick={handleClick}
+      onPointerOver={() => setIsHovered(true)}
+      onPointerOut={() => setIsHovered(false)}
+    >
       {/* Body */}
       <mesh position={[0, 0, 0]}>
         <sphereGeometry args={[0.2, 16, 16]} />
-        <meshStandardMaterial color="#f5d742" />
+        <meshStandardMaterial 
+          color={isHovered ? "#ffe066" : "#f5d742"} 
+          emissive={isHovered ? "#f5d742" : "#000000"}
+          emissiveIntensity={isHovered ? 0.3 : 0}
+        />
       </mesh>
       {/* Head */}
       <mesh position={[0.15, 0.12, 0]}>
         <sphereGeometry args={[0.12, 16, 16]} />
-        <meshStandardMaterial color="#f5d742" />
+        <meshStandardMaterial 
+          color={isHovered ? "#ffe066" : "#f5d742"}
+          emissive={isHovered ? "#f5d742" : "#000000"}
+          emissiveIntensity={isHovered ? 0.3 : 0}
+        />
       </mesh>
       {/* Beak */}
       <mesh position={[0.28, 0.1, 0]}>
         <coneGeometry args={[0.05, 0.1, 8]} />
         <meshStandardMaterial color="#ff9800" />
       </mesh>
+      {/* Cursor hint when hovered */}
+      {isHovered && (
+        <Html position={[0, 0.4, 0]} center>
+          <div className="bg-lake-900/90 text-cream-100 text-[10px] px-2 py-1 rounded-lg whitespace-nowrap border border-amber-500/30">
+            Cliquer pour caresser 🤚
+          </div>
+        </Html>
+      )}
     </group>
   );
 }
@@ -278,12 +377,29 @@ function Scene() {
   const dragonflies = useGameStore((state) => state.dragonflies);
   const plants = useGameStore((state) => state.plants);
   const activeEffects = useGameStore((state) => state.activeEffects);
+  const petDuck = useGameStore((state) => state.petDuck);
+  
+  const [heartPositions, setHeartPositions] = useState<{ id: number; pos: [number, number, number] }[]>([]);
+  const heartIdRef = useRef(0);
   
   // Set up isometric-like view
   useEffect(() => {
     camera.position.set(8, 8, 8);
     camera.lookAt(0, 0, 0);
   }, [camera]);
+  
+  const handlePetDuck = (pos: [number, number, number]) => {
+    // Add hearts
+    const newId = heartIdRef.current++;
+    setHeartPositions(prev => [...prev, { id: newId, pos }]);
+    
+    // Increase duck happiness
+    petDuck();
+  };
+  
+  const removeHearts = (id: number) => {
+    setHeartPositions(prev => prev.filter(h => h.id !== id));
+  };
   
   // Generate positions
   const duckPositions = useMemo(() => {
@@ -320,7 +436,7 @@ function Scene() {
       
       {/* Animals */}
       {duckPositions.map((pos, i) => (
-        <Duck key={`duck-${i}`} position={pos} index={i} />
+        <Duck key={`duck-${i}`} position={pos} index={i} onPet={handlePetDuck} />
       ))}
       
       {Array.from({ length: fishCount }, (_, i) => (
@@ -334,6 +450,11 @@ function Scene() {
       {/* Plants */}
       {plantPositions.map((pos, i) => (
         <Plant key={`plant-${i}`} position={pos} index={i} />
+      ))}
+      
+      {/* Animated Hearts */}
+      {heartPositions.map(({ id, pos }) => (
+        <AnimatedHearts key={id} position={pos} onComplete={() => removeHearts(id)} />
       ))}
       
       {/* Controls */}
@@ -357,14 +478,14 @@ export default function IsometricLake() {
           <span>🏞️</span>
           Vue du Lac
         </h2>
-        <p className="text-xs text-cream-300/50">Glisser pour tourner</p>
+        <p className="text-xs text-cream-300/50">Cliquez sur un canard !</p>
       </div>
       
       {/* Three.js Canvas */}
       <Canvas
         camera={{ position: [8, 8, 8], fov: 35 }}
         gl={{ antialias: true, alpha: true }}
-        style={{ background: 'transparent' }}
+        style={{ background: 'transparent', cursor: 'pointer' }}
       >
         <Scene />
       </Canvas>

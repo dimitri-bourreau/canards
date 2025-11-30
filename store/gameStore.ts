@@ -20,6 +20,7 @@ interface GameStore extends GameState {
   upgradeFiltration: () => void;
   plantVegetation: () => void;
   stockFish: () => void;
+  petDuck: () => void;
   
   // Game loop
   gameTick: () => void;
@@ -281,6 +282,16 @@ export const useGameStore = create<GameStore>()(
         get().triggerEffect('stocking');
         get().addNotification('Nouvelles espèces de poissons ajoutées ! 🐟', 'success');
         setTimeout(() => get().clearEffect('stocking'), 2000);
+      },
+      
+      // Pet Duck Action (clicking on duck in lake)
+      petDuck: () => {
+        set((s) => ({
+          ducks: {
+            ...s.ducks,
+            happiness: clamp(s.ducks.happiness + 3, 0, 100),
+          },
+        }));
       },
       
       // Game Tick - called every interval to progress the game
