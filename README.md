@@ -4,6 +4,13 @@ Un jeu de gestion de sanctuaire animalier minimaliste où vous restaurez et entr
 
 ![Capture d'écran de Canards](screenshot.png)
 
+## Utilisation de Cursor
+
+En générant ce projet, j'ai identifié cette consommation de tokens :
+
+![Consommation de tokens lors de la génération du projet](./token-consumption.png)
+
+
 ## 🎮 Fonctionnalités
 
 ### Tableau de Bord (3/4 de l'écran)
